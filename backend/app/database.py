@@ -6,12 +6,13 @@ Falls back to aiosqlite for tests when DATABASE_URL points to sqlite.
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
+from urllib.parse import urlparse, urlunparse
 
 from .config import settings
 
 # ── Clean the Database URL ──
 # Neon adds `?sslmode=require` by default, but asyncpg rejects this parameter in the URL.
-# We strip it out and pass `ssl=True` via connect_args instead.
+# We strip query params out and pass `ssl=True` via connect_args instead.
 db_url = settings.DATABASE_URL
 _connect_args = {}
 
@@ -19,8 +20,10 @@ if db_url.startswith("sqlite"):
     _connect_args["check_same_thread"] = False
 else:
     # It's PostgreSQL (asyncpg)
-    if "?sslmode=require" in db_url:
-        db_url = db_url.replace("?sslmode=require", "")
+    parsed = urlparse(db_url)
+    if parsed.query:
+        # Strip all query params (like sslmode=require, channel_binding=require)
+        db_url = urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, "", parsed.fragment))
         _connect_args["ssl"] = True
     elif "neon.tech" in db_url:
         # Neon always requires SSL
