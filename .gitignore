@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+backend/venv/
+.venv/
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment — NEVER commit secrets
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads (user files)
+backend/uploads/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test output
+test_output.txt
+test_results.txt
+
+# Large zip / archives
+*.zip
+
+# Playwright browsers (too large for git)
+playwright-browsers/

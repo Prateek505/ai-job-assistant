@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: ai-job-assistant
+    runtime: python
+    region: singapore   # closest to India
+    plan: free
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r backend/requirements.txt
+      cd frontend && npm ci && npm run build
+      cp -r frontend/dist backend/frontend_dist
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
+      - key: DATABASE_URL
+        sync: false         # Set manually in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true # Render auto-generates a secure random string
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRY_MINUTES
+        value: 1440
+      - key: OPENAI_API_KEY
+        sync: false         # Set in Render dashboard
+      - key: FRONTEND_URL
+        value: https://ai-job-assistant.onrender.com
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
