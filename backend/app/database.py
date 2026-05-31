@@ -9,13 +9,25 @@ from sqlalchemy.orm import DeclarativeBase
 
 from .config import settings
 
-# Create the async engine — handle SQLite vs PostgreSQL
+# ── Clean the Database URL ──
+# Neon adds `?sslmode=require` by default, but asyncpg rejects this parameter in the URL.
+# We strip it out and pass `ssl=True` via connect_args instead.
+db_url = settings.DATABASE_URL
 _connect_args = {}
-if settings.DATABASE_URL.startswith("sqlite"):
+
+if db_url.startswith("sqlite"):
     _connect_args["check_same_thread"] = False
+else:
+    # It's PostgreSQL (asyncpg)
+    if "?sslmode=require" in db_url:
+        db_url = db_url.replace("?sslmode=require", "")
+        _connect_args["ssl"] = True
+    elif "neon.tech" in db_url:
+        # Neon always requires SSL
+        _connect_args["ssl"] = True
 
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=False,
     future=True,
     connect_args=_connect_args,
