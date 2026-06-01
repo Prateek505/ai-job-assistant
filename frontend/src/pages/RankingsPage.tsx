@@ -110,18 +110,40 @@ const RankingsPage: React.FC = () => {
                                 ))}
                             </div>
 
-                            {/* Status selector */}
-                            <select
-                                className="input"
-                                value={match.status}
-                                onChange={e => updateStatus(match.id, e.target.value)}
-                                style={{ width: 120, fontSize: '0.8rem' }}
-                            >
-                                <option value="new">New</option>
-                                <option value="saved">Saved</option>
-                                <option value="applied">Applied</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
+                            {/* Status selector — styled pill buttons, no white native dropdown */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flexShrink: 0 }}>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center', marginBottom: 2 }}>Status</div>
+                                <div style={{ display: 'flex', gap: 4 }}>
+                                    {[
+                                        { value: 'new',      label: 'New',     color: '#6366f1', bg: 'rgba(99,102,241,0.15)' },
+                                        { value: 'saved',    label: 'Saved',   color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+                                        { value: 'applied',  label: 'Applied', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+                                        { value: 'rejected', label: 'Reject',  color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
+                                    ].map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => updateStatus(match.id, opt.value)}
+                                            title={opt.label}
+                                            style={{
+                                                padding: '4px 8px',
+                                                borderRadius: 6,
+                                                border: match.status === opt.value
+                                                    ? `1.5px solid ${opt.color}`
+                                                    : '1.5px solid transparent',
+                                                background: match.status === opt.value ? opt.bg : 'var(--bg-glass)',
+                                                color: match.status === opt.value ? opt.color : 'var(--text-muted)',
+                                                fontSize: '0.7rem',
+                                                fontWeight: match.status === opt.value ? 700 : 400,
+                                                cursor: 'pointer',
+                                                transition: 'all 0.15s ease',
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
